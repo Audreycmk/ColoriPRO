@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function TestPage() {
   const [age, setAge] = useState('');
-  const [ethnicity, setEthnicity] = useState('');
+  // const [ethnicity, setEthnicity] = useState('');
   const [styles, setStyles] = useState<string[]>([]);
   const router = useRouter(); // Initialize router
 
@@ -22,7 +22,7 @@ export default function TestPage() {
   
     const query = new URLSearchParams({
       age,
-      ethnicity,
+      // ethnicity,
       styles: styles.join(','),
     }).toString();
   
@@ -56,8 +56,8 @@ export default function TestPage() {
             />
           </div>
 
-          {/* Ethnicity */}
-          <div style={{ marginTop: '1rem' }}>
+          {/* Ethnicity- Hidden */}
+          {/* <div style={{ marginTop: '1rem' }}>
             <label htmlFor="ethnicity">Ethnicity:</label><br />
             <select
               id="ethnicity"
@@ -76,7 +76,7 @@ export default function TestPage() {
               <option value="Mixed">Mixed</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Preferred Styles */}
           <div style={{ marginTop: '1rem' }}>
