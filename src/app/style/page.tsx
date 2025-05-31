@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
-// Dynamically load the client component
+// ✅ This disables SSR for the component that uses useSearchParams()
 const StyleClient = dynamic(() => import('./StyleClient'), { ssr: false });
 
 export default function StylePage() {
