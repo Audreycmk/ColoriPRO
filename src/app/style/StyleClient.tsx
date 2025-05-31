@@ -18,11 +18,7 @@ export default function StyleClient() {
   const age = searchParams.get('age') || '';
 
   const handleStyleClick = (style: string) => {
-    const query = new URLSearchParams({
-      age,
-      styles: style,
-    }).toString();
-
+    const query = new URLSearchParams({ age, styles: style }).toString();
     router.push(`/upload-image/selfie?${query}`);
   };
 

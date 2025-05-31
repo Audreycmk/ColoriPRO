@@ -1,13 +1,13 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
-// Dynamically import the client component WITHOUT SSR
+// Dynamically load the client component
 const StyleClient = dynamic(() => import('./StyleClient'), { ssr: false });
 
 export default function StylePage() {
   return (
     <div className="mobile-display">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>Loading style page...</div>}>
         <StyleClient />
       </Suspense>
     </div>
