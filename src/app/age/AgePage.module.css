@@ -2,7 +2,7 @@
     position: relative;
     padding: 2rem;
     min-height: 100vh;
-    background: url('/green.svg') no-repeat center center / cover;
+    background: url('/Q1.png') no-repeat;
   }
   
   .logo {
@@ -20,13 +20,12 @@
   
   .back {
     position: absolute;
-    top: 64px;
-    left: 40px;
+    top: 1rem;
+    left: 1rem;
     color: rgba(255, 255, 255, 0.8);
     font-family: "Advent Pro";
     font-size: 35px;
-    line-height: 24px;
-    letter-spacing: 0.38px;
+    font-weight: 100;
     cursor: pointer;
   }
   
@@ -45,7 +44,7 @@
     display: flex;
     width: 269px;
     height: 60px;
-    margin: 0 auto 2rem;
+    margin: 12.5rem auto 1.5rem;
     justify-content: center;
     align-items: center;
     color: #FFF;
@@ -54,6 +53,7 @@
     -webkit-text-stroke: 0.5px #FFF;
     font-family: "Poiret One";
     font-size: 28px;
+    font-weight: 200;
     line-height: 40px;
     letter-spacing: 1.4px;
   }
@@ -61,7 +61,7 @@
   .card {
     display: inline-flex;
     height: 562px;
-    padding: 36px 22px 466px 24px;
+    padding: 0px 22px 466px 24px;
     flex-direction: column;
     align-items: center;
     gap: 1rem;

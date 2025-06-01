@@ -1,15 +1,15 @@
 'use client';
 import styles from './AgePage.module.css';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 
 const ageOptions = [
   'Under 18',
-  '18-25',
+  '18 - 25',
   '26 - 35',
-  '36-50',
-  '50+',
-  'Prefer not to say'
+  '36 - 50',
+  '50 +',
+  'Prefer not to say',
 ];
 
 export default function AgePage() {
@@ -21,30 +21,48 @@ export default function AgePage() {
 
   return (
     <div className="mobile-display">
-    <div className={styles.container}>
-      <img src="/ColoriAI.svg" alt="ColoriAI Logo" className={styles.logo} />
-
-      <div className={styles.topBar}>
-        <div className={styles.back} onClick={() => router.back()}>&lt;</div>
-        <button className={styles.login} onClick={() => router.push('/login')}>LOGIN</button>
+      <div className={styles.container}>
+        {/* Login Button */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1rem',
+          zIndex: 10,
+        }}
+      >
+        <Link href="/login">
+          <button className="login">LOGIN</button>
+        </Link>
       </div>
 
-      <h2 className={styles.heading}>Your Age Group</h2>
+       
 
-      <div className={styles.card}>
-        {ageOptions.map((age) => (
-          <button
-            key={age}
-            className={styles.optionButton}
-            onClick={() => handleAgeClick(age)}
-          >
-            {age}
-          </button>
-        ))}
+        {/* Top Bar */}
+        <div className={styles.topBar}>
+          <div className={styles.back} onClick={() => router.back()}>
+            &lt;
+          </div>
+        </div>
+
+        {/* Heading */}
+        <h2 className={styles.heading}>Your Age?</h2>
+
+        {/* Options */}
+        <div className={styles.card}>
+          {ageOptions.map((age) => (
+            <button
+              key={age}
+              className={styles.optionButton}
+              onClick={() => handleAgeClick(age)}
+            >
+              {age}
+            </button>
+          ))}
+        </div>
+
+       
       </div>
-
-      <p className={styles.slogan}>your Personal AI Stylist</p>
-    </div>
     </div>
   );
 }
