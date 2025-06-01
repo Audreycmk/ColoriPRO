@@ -1,47 +1,65 @@
 'use client';
 import styles from './StylePage.module.css';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const styleOptions = [
   'Daily',
   'Girly',
   'Sporty',
-  'Chic',
-  'Elegant',
-  'Edgy'
+  'Streetwear',
+  'Cocktail Party',
+  'Formal',
 ];
 
 export default function StylePage() {
   const router = useRouter();
 
-  const handleStyleClick = (style: string) => {
-    router.push(`/upload?style=${encodeURIComponent(style)}`);
+  const handleStyleClick = () => {
+    router.push('/upload-image/selfie');
   };
 
   return (
     <div className="mobile-display">
       <div className={styles.container}>
-        <img src="/ColoriAI.svg" alt="ColoriAI Logo" className={styles.logo} />
-
-        <div className={styles.topBar}>
-          <div className={styles.back} onClick={() => router.push('/age')}>&lt;</div>
-          <button className={styles.login} onClick={() => router.push('/login')}>LOGIN</button>
+        {/* Login Button */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            zIndex: 10,
+          }}
+        >
+          <Link href="/login">
+            <button className="login">LOGIN</button>
+          </Link>
         </div>
 
-        <h2 className={styles.heading}>Select Your Style</h2>
+        {/* Top Bar */}
+        <div className={styles.topBar}>
+          <div className={styles.back} onClick={() => router.push('/age')}>
+            &lt;
+          </div>
+        </div>
 
+        {/* Heading */}
+        <h2 className={styles.heading}>Your Style?</h2>
+
+        {/* Options */}
         <div className={styles.card}>
           {styleOptions.map((style) => (
             <button
               key={style}
               className={styles.optionButton}
-              onClick={() => handleStyleClick(style)}
+              onClick={handleStyleClick}
             >
               {style}
             </button>
           ))}
         </div>
 
+        {/* Slogan */}
         <p className={styles.slogan}>Discover your seasonal color match through fashion.</p>
       </div>
     </div>
