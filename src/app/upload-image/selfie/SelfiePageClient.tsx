@@ -116,7 +116,7 @@ export default function SelfiePageClient() {
       ) : (
         <>
           <label className={styles.cameraCircle} onClick={handleClickChooseAgain}>
-            <img src="/camera.svg" alt="Camera Icon" />
+            <img src="/Camera.svg" alt="Camera Icon" />
           </label>
 
           <button className={styles.uploadBtn} onClick={handleClickChooseAgain}>
