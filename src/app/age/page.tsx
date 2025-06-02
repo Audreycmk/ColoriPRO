@@ -2,6 +2,7 @@
 import styles from './AgePage.module.css';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import TransitionWrapper from '@/components/TransitionWrapper';
 
 const ageOptions = [
   'Under 18',
@@ -20,6 +21,7 @@ export default function AgePage() {
   };
 
   return (
+    <TransitionWrapper>
     <div className="mobile-display">
       <div className={styles.container}>
         {/* Login Button */}
@@ -40,7 +42,7 @@ export default function AgePage() {
 
         {/* Top Bar */}
         <div className={styles.topBar}>
-          <div className={styles.back} onClick={() => router.back()}>
+          <div className={styles.back} onClick={() => router.push('/')}>
             &lt;
           </div>
         </div>
@@ -64,5 +66,6 @@ export default function AgePage() {
        
       </div>
     </div>
+    </TransitionWrapper>
   );
 }

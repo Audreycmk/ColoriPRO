@@ -2,6 +2,7 @@
 import styles from './StylePage.module.css';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import TransitionWrapper from '@/components/TransitionWrapper';
 
 const styleOptions = [
   'Daily',
@@ -20,6 +21,7 @@ export default function StylePage() {
   };
 
   return (
+    <TransitionWrapper>
     <div className="mobile-display">
       <div className={styles.container}>
         {/* Login Button */}
@@ -63,5 +65,6 @@ export default function StylePage() {
         <p className={styles.slogan}>Discover your seasonal color match through fashion.</p>
       </div>
     </div>
+  </TransitionWrapper>
   );
 }
