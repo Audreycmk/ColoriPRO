@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './SelfiePage.module.css';
+import Link from 'next/link';
 
 export default function SelfiePageClient() {
   const router = useRouter();
@@ -57,13 +58,21 @@ export default function SelfiePageClient() {
   };
 
   return (
+    <div className="mobile-display">
     <div className={`${styles.container} ${imageSrc ? styles.confirmBackground : styles.uploadBackground}`}>
       {/* Login Button */}
-      <div className={styles.loginBtn}>
-        <a href="/login">
-          <button className="login">LOGIN</button>
-        </a>
-      </div>
+      <div
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            zIndex: 10,
+          }}
+        >
+          <Link href="/login">
+            <button className="login">LOGIN</button>
+          </Link>
+        </div>
 
       {/* Back Button */}
       <div className={styles.topBar}>
@@ -123,6 +132,7 @@ export default function SelfiePageClient() {
         style={{ display: 'none' }}
         onChange={handleFileSelected}
       />
+    </div>
     </div>
   );
 }
