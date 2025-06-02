@@ -1,7 +1,10 @@
-// src/app/upload-image/selfie/page.tsx
-'use client';
+import { Suspense } from 'react';
 import SelfiePageClient from './SelfiePageClient';
 
 export default function SelfiePage() {
-  return <SelfiePageClient />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SelfiePageClient />
+    </Suspense>
+  );
 }
