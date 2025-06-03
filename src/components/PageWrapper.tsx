@@ -21,7 +21,7 @@ export default function PageWrapper({ children }: { children: React.ReactNode })
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 250ms linear, transform 250ms linear',
+        transition: 'opacity 600ms linear',
       }}
     >
       {children}

@@ -1,3 +1,4 @@
+// src/app/api/generate-prompt/route.ts
 import { NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 
@@ -5,79 +6,70 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: Request) {
   try {
-    const { faceHex, eyeHex, hairHex, age, ethnicity, style } = await req.json();
-
+    const { age, style, imageUrl } = await req.json();
     const styleFormatted = Array.isArray(style) ? style.join(', ') : style;
 
     const prompt = `
-My skin tone is ${faceHex}, eye color is ${eyeHex}, and hair color is ${hairHex}.
-I am a ${age}-year-old ${ethnicity} person with a ${styleFormatted} style preference.
+You are a Korean 16-season color analyst and stylist.
 
-Use Korean 16-season color analysis to identify my season and return:
+From the image:
+- Analyze the user's **skin tone (avoid makeup), eye color, and hair color**.
+- **Estimate gender and ethnicity**, but **do not include them in the result** — just print them to the console.
+- Provide beauty and fashion recommendations as described below.
 
-1. My seasonal type with a brief explanation.
-2. Base tones (CSV: Color Name, HEX) for skin, eye, hair.
-3. 8 recommended seasonal colors (CSV).
-4. Suitable jewelry tones (CSV: Metal or Gem, HEX).
-5. 3 flattering hair colors (CSV).
-6. Makeup:
-   - 4 lipsticks (Name, HEX)
-   - 2 blushes (Name, HEX)
-   - MAC foundation (e.g., NW 43)
-   - Parnell cushion (e.g., 33W Tan Warm)
-7. 4 nail polish colors (CSV).
-8. 2 glasses frame shapes that suit me.
-9. 2 ${ethnicity} celebrities with similar coloring.
+User Info:
+- Age: ${age}
+- Style Preference: ${styleFormatted}
 
-Then describe a visual layout mockup using the colors above:
+Generate:
+1. Seasonal color type (with short explanation)
+2. Lower cheek, eye, hair colors of the image (CSV: Color Name, HEX)
+3. 9 seasonal palette colors (CSV: Name, HEX)
+4. 1 Jewelry tone (Metal, HEX)
+5. 2 flattering hair colors (CSV)
+6. Makeup suggestions of 2 foundations , 1 Korean cushion, 4 lipsticks for different look, 2 blushes, 2 eye shadow palettes (real product names with shade, HEX, and links)
+9. 2 similar-looking celebrities (based on ethnicity)
 
-LEFT SIDE:
-- Labeled swatches: skin, eye, hair, seasonal palette, lipstick, blush, nails, jewelry
-- Use clean, readable Comfortaa font
-
-RIGHT SIDE:
-- Outfit in ${styleFormatted} style: top, bottom, shoes, glasses, bag
-- Use seasonal palette, keep layout clean, spaced, and fully visible
-
-Then generate a **FULL-PAGE VISUAL IMAGE** with the following layout instructions:
-
-- A centered and evenly spaced palette chart and outfit visualization
-- Use my color type as the title ()
-- Use clean Comfortaa-style font and clear bold headers
-
-**LEFT COLUMN:**
-- Seasonal color swatches (Color Name + HEX) in a labeled grid
-- Base colors: skin tone, hair color, eye color
-- Makeup shades: lipstick, blush, nail polish (labeled)
-- Jewelry tones: metal/gem names + HEX
-
-**RIGHT COLUMN:**
-- Full-body outfit mockup in [Style] (e.g., hoodie, joggers, sneakers, glasses, backpack)
-- Outfit swatches labeled under “Sporty Outfit” (or corresponding style)
-- Outfit elements should reflect the suggested seasonal palette
-
-**Visual rules:**
-- No cropping — full layout must be visible
-- Keep spacing clean and balanced between elements
-- No background
-- Avoid facial makeup demos (no lipstick on face)
-- Ensure visual consistency and layout alignment across generations
-
-**Final Output:** End with a one-line image prompt formatted as:
-**Image Prompt:** [Insert short sentence describing this layout for DALL·E generation]
-
+Then end with:
+**Image Prompt:** [short 1-line visual outfit prompt based on seasonal type + style]
 `;
 
-    const chatResponse = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
+    const visionResponse = await openai.chat.completions.create({
+      model: 'gpt-4o',
       temperature: 0.7,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt,
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrl, // This should be the public URL of the uploaded image
+              },
+            },
+          ],
+        },
+      ],
     });
 
-    const result = chatResponse.choices[0]?.message.content;
+    const result = visionResponse.choices[0]?.message.content || '';
+
+    // Optional: Log estimated gender/ethnicity if included in result
+    const genderMatch = result.match(/Estimated Gender:\s*(.+)/i);
+    const ethnicityMatch = result.match(/Estimated Ethnicity:\s*(.+)/i);
+
+    if (genderMatch || ethnicityMatch) {
+      console.log('🔍 Estimated Gender:', genderMatch?.[1] || 'Not detected');
+      console.log('🔍 Estimated Ethnicity:', ethnicityMatch?.[1] || 'Not detected');
+    }
+
     return NextResponse.json({ result });
   } catch (err) {
-    console.error('❌ Error in GPT prompt route:', err);
+    console.error('❌ Error in GPT Vision prompt route:', err);
     return NextResponse.json({ error: 'Failed to generate prompt' }, { status: 500 });
   }
 }

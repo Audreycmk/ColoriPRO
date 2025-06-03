@@ -15,16 +15,17 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log('🎨 Generating image with prompt:', imagePrompt);
+
     const imageResponse = await openai.images.generate({
       model: 'dall-e-3',
       prompt: imagePrompt,
       n: 1,
-      size: '1024x1792',
+      size: '1024x1792', // Vertical layout (best for full-body mockup)
       response_format: 'url',
     });
 
     const imageUrl = imageResponse.data?.[0]?.url;
-    console.log('✅ Generated image URL:', imageUrl);
 
     if (!imageUrl || !imageUrl.startsWith('http')) {
       console.error('❌ Invalid image URL:', imageUrl);
@@ -33,6 +34,9 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    console.log('✅ Generated image URL:', imageUrl);
+    console.log('🔧 Note: Display this image at max-height: 350px. If overflow, resize to 250px in frontend.');
 
     return NextResponse.json({ imageUrl });
   } catch (error) {

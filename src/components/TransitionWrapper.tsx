@@ -13,7 +13,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
     <div
       style={{
         opacity: show ? 1 : 0,
-        transition: 'opacity 250ms linear, transform 250ms linear',
+        transition: 'opacity 600ms linear',
       }}
     >
       {children}
