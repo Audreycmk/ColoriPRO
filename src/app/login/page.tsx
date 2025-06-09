@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import TransitionWrapper from '@/components/TransitionWrapper';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,51 +33,53 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page" style={{ padding: '2rem', maxWidth: '400px', margin: '0 auto' }}>
-      
-      {/* Back Button */}
-      <button
-        type="button"
-        onClick={() => router.push('/')}
-        style={{ marginBottom: '1rem' }}
-      >
-        ← Back to Home
-      </button>
+    <TransitionWrapper>
+      <div className="login-page" style={{ padding: '2rem', maxWidth: '400px', margin: '0 auto' }}>
+        
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          style={{ marginBottom: '1rem' }}
+        >
+          ← Back to Home
+        </button>
 
-      <form onSubmit={handleLogin}>
-        <h2>Login</h2>
-        <div>
-          <label>Email</label><br />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ width: '100%', marginBottom: '1rem' }}
-          />
-        </div>
-        <div>
-          <label>Password</label><br />
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', marginBottom: '1rem' }}
-          />
-        </div>
-        {error && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-        <button type="submit" style={{ width: '100%' }}>Login</button>
+        <form onSubmit={handleLogin}>
+          <h2>Login</h2>
+          <div>
+            <label>Email</label><br />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            />
+          </div>
+          <div>
+            <label>Password</label><br />
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            />
+          </div>
+          {error && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+          <button type="submit" style={{ width: '100%' }}>Login</button>
 
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <p>
-            <a href="/forgot-password" style={{ color: 'blue' }}>Forgot Password?</a>
-          </p>
-          <p>
-            <a href="/create-account" style={{ color: 'blue' }}>Create an Account</a>
-          </p>
-        </div>
-      </form>
-    </div>
+          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            <p>
+              <a href="/forgot-password" style={{ color: 'blue' }}>Forgot Password?</a>
+            </p>
+            <p>
+              <a href="/create-account" style={{ color: 'blue' }}>Create an Account</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </TransitionWrapper>
   );
 }

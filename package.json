@@ -14,6 +14,7 @@
     "colorthief": "^2.6.0",
     "dotenv": "^16.5.0",
     "html2canvas": "^1.4.1",
+    "js-cookie": "^3.0.5",
     "jspdf": "^3.0.1",
     "mongoose": "^8.14.2",
     "next": "15.3.2",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.6",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,43 +1,77 @@
 // src/app/api/generate-prompt/route.ts
-import { NextResponse } from 'next/server';
-import { OpenAI } from 'openai';
+import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { age, style, imageUrl } = await req.json();
-    const styleFormatted = Array.isArray(style) ? style.join(', ') : style;
+    let { age, style, imageUrl } = await req.json();
+
+    if (!age) age = '18';
+    if (!style) style = 'Daily';
 
     const prompt = `
-You are a Korean 16-season color analyst and stylist.
+You are a professional Korean 16-season color stylist.
 
-From the image:
-- Analyze the user's **skin tone (avoid makeup), eye color, and hair color**.
-- **Estimate gender and ethnicity**, but **do not include them in the result** — just print them to the console.
-- Provide beauty and fashion recommendations as described below.
+The image you will see is a user-submitted selfie for seasonal color matching.  
+**Do not identify the person.**  
+Instead, use visible features such as:
+- Skin undertone (avoid makeup)
+- Natural eye color
+- Hair color
 
-User Info:
-- Age: ${age}
-- Style Preference: ${styleFormatted}
+Then follow this structure:
 
-Generate:
-1. Seasonal color type (with short explanation)
-2. Lower cheek, eye, hair colors of the image (CSV: Color Name, HEX)
-3. 9 seasonal palette colors (CSV: Name, HEX)
-4. 1 Jewelry tone (Metal, HEX)
-5. 2 flattering hair colors (CSV)
-6. Makeup suggestions of 2 foundations , 1 Korean cushion, 4 lipsticks for different look, 2 blushes, 2 eye shadow palettes (real product names with shade, HEX, and links)
-9. 2 similar-looking celebrities (based on ethnicity)
+1. **Seasonal Color Type**  
+   e.g. Soft Autumn
 
-Then end with:
-**Image Prompt:** [short 1-line visual outfit prompt based on seasonal type + style]
+2. **Color Extraction** (CSV format):  
+   Label, HEX  
+   Example:  
+   Face, #EDC1A8  
+   Eye, #6A5554  
+   Hair, #3C3334
+
+3. **9-Color Seasonal Palette** (CSV: Name, HEX)  
+   e.g. Dusty Rose, #C0A6A1
+
+4. **Jewelry Tone**  
+   e.g. Gold, #D4AF37
+
+5. **2 Flattering Hair Colors** (CSV: Name, HEX)
+
+6. **Makeup Suggestions**  
+   - 2 Foundations (Brand, Product, Shade, HEX, URL)  
+   - 1 Korean Cushion  
+   - 4 Lipsticks  
+   - 2 Blushes  
+   - 2 Eyeshadow Palettes  
+   Use real products with HEX and URLs
+
+7. **2 Similar Celebrities**  
+   Korean or East Asian — names only
+
+8. **Image Prompt:**  
+   A short, 1-line visual prompt for a full-body outfit image  
+   that matches the user’s seasonal color type and **${style}** style.
+
+User Info:  
+- Age: ${age}  
+- Style: ${style}
 `;
 
-    const visionResponse = await openai.chat.completions.create({
+    console.log('📩 Prompt sent to GPT:', prompt.slice(0, 400) + '...');
+
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
-      temperature: 0.7,
       messages: [
+        {
+          role: 'system',
+          content: 'You are a Korean 16-season color analysis stylist.',
+        },
         {
           role: 'user',
           content: [
@@ -48,7 +82,7 @@ Then end with:
             {
               type: 'image_url',
               image_url: {
-                url: imageUrl, // This should be the public URL of the uploaded image
+                url: imageUrl,
               },
             },
           ],
@@ -56,20 +90,17 @@ Then end with:
       ],
     });
 
-    const result = visionResponse.choices[0]?.message.content || '';
+    const result = completion.choices?.[0]?.message?.content;
 
-    // Optional: Log estimated gender/ethnicity if included in result
-    const genderMatch = result.match(/Estimated Gender:\s*(.+)/i);
-    const ethnicityMatch = result.match(/Estimated Ethnicity:\s*(.+)/i);
-
-    if (genderMatch || ethnicityMatch) {
-      console.log('🔍 Estimated Gender:', genderMatch?.[1] || 'Not detected');
-      console.log('🔍 Estimated Ethnicity:', ethnicityMatch?.[1] || 'Not detected');
+    if (!result) {
+      console.error('❌ No content returned from OpenAI.');
+      return NextResponse.json({ error: 'No response from OpenAI' }, { status: 500 });
     }
 
+    console.log('✅ Prompt result generated successfully.');
     return NextResponse.json({ result });
   } catch (err) {
-    console.error('❌ Error in GPT Vision prompt route:', err);
+    console.error('❌ Error in /api/generate-prompt:', err);
     return NextResponse.json({ error: 'Failed to generate prompt' }, { status: 500 });
   }
 }
