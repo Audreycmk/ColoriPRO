@@ -10,22 +10,83 @@ import TransitionWrapper from '@/components/TransitionWrapper';
 
 
 export default function ReportPage() {
-  const faceColor = '#edc1a8';
-  const eyeColor = '#6a5554';
-  const hairColor = '#3c3334';
-  const seasonType = 'Soft Autumn';
+  const [reportResult, setReportResult] = useState<string | null>(null);
+  const [outfitImage, setOutfitImage] = useState<string | null>(null);
 
-  const palette = [
-    { name: 'Dusty Rose', hex: '#C0A6A1' },
-    { name: 'Sage Green', hex: '#A9C8BD' },
-    { name: 'Soft Peach', hex: '#F1C2B2' },
-    { name: 'Muted Teal', hex: '#A4B6B4' },
-    { name: 'Warm Taupe', hex: '#B5A99D' },
-    { name: 'Burnt Sienna', hex: '#A65E2E' },
-    { name: 'Olive Green', hex: '#8E7C5B' },
-    { name: 'Soft Plum', hex: '#A5788D' },
-    { name: 'Rosewood', hex: '#9B6C6C' },
-  ];
+  useEffect(() => {
+    const storedResult = localStorage.getItem('reportResult');
+    const storedOutfitImage = localStorage.getItem('outfitImage');
+    if (storedResult) setReportResult(storedResult);
+    if (storedOutfitImage) setOutfitImage(storedOutfitImage);
+  }, []);
+
+  // Extract color type from the report result
+  const getColorType = () => {
+    if (!reportResult) return 'Soft Autumn';
+    const match = reportResult.match(/\*\*Seasonal Color Type:\*\*\s*([^\n]+)/i);
+    return match ? match[1].trim() : 'Soft Autumn';
+  };
+
+  const getColorPalette = () => {
+    if (!reportResult) return [
+      { name: 'Dusty Rose', hex: '#C0A6A1' },
+      { name: 'Sage Green', hex: '#A9C8BD' },
+      { name: 'Soft Peach', hex: '#F1C2B2' },
+      { name: 'Muted Teal', hex: '#A4B6B4' },
+      { name: 'Warm Taupe', hex: '#B5A99D' },
+      { name: 'Burnt Sienna', hex: '#A65E2E' },
+      { name: 'Olive Green', hex: '#8E7C5B' },
+      { name: 'Soft Plum', hex: '#A5788D' },
+      { name: 'Rosewood', hex: '#9B6C6C' },
+    ];
+
+    const paletteMatch = reportResult.match(/\*\*Color Palette:\*\*\s*([\s\S]+?)(?=\*\*|$)/i);
+    if (!paletteMatch) return [];
+
+    const paletteText = paletteMatch[1].trim();
+    const colorLines = paletteText.split('\n').filter(line => line.trim());
+    
+    return colorLines.map(line => {
+      const [name, hex] = line.split(':').map(s => s.trim());
+      return { name, hex };
+    });
+  };
+
+  const getExtractedColors = () => {
+    if (!reportResult) return {
+      face: '#edc1a8',
+      eye: '#6a5554',
+      hair: '#3c3334'
+    };
+
+    const colorsMatch = reportResult.match(/\*\*Extracted Colors:\*\*\s*([\s\S]+?)(?=\*\*|$)/i);
+    if (!colorsMatch) return {
+      face: '#edc1a8',
+      eye: '#6a5554',
+      hair: '#3c3334'
+    };
+
+    const colorsText = colorsMatch[1].trim();
+    const colorLines = colorsText.split('\n').filter(line => line.trim());
+    
+    const colors: { [key: string]: string } = {};
+    colorLines.forEach(line => {
+      const [type, hex] = line.split(':').map(s => s.trim());
+      if (type && hex) {
+        colors[type.toLowerCase()] = hex;
+      }
+    });
+
+    return {
+      face: colors.face || '#edc1a8',
+      eye: colors.eye || '#6a5554',
+      hair: colors.hair || '#3c3334'
+    };
+  };
+
+  const extractedColors = getExtractedColors();
+  const seasonType = getColorType();
+  const palette = getColorPalette();
 
   const [showPopup, setShowPopup] = useState<string | null>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -179,7 +240,11 @@ export default function ReportPage() {
 
               {/* Color Extraction */}
               <div className="mt-[10px] flex gap-[40px] items-center mb-2 justify-center">
-                {[{ label: 'Face', hex: faceColor }, { label: 'Eye', hex: eyeColor }, { label: 'Hair', hex: hairColor }].map(({ label, hex }) => (
+                {[
+                  { label: 'Face', hex: extractedColors.face }, 
+                  { label: 'Eye', hex: extractedColors.eye }, 
+                  { label: 'Hair', hex: extractedColors.hair }
+                ].map(({ label, hex }) => (
                   <div key={label} className="text-center">
                     <div
                       className={"w-[40px] h-[40px] rounded-full mx-auto"}
@@ -289,7 +354,7 @@ export default function ReportPage() {
               <div className="mt-[50px] mb-8 text-center">
                 <p className={styles.reportTitle}>STYLE: SPORTY</p>
                 <Image
-                  src="/outfit-demo.png"
+                  src={outfitImage || "/outfit-demo.png"}
                   alt="Style Outfit"
                   width={200}
                   height={350}
