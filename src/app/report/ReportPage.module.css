@@ -1,5 +1,94 @@
 /* Layout */
 .container {
+    width: 375px;
+    height: 667px;
+    background-color: #F9F1E7;
+    padding: 1rem;
+    margin: 0 auto;
+    font-family: sans-serif;
+}
+
+.title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-family: serif;
+    color: black;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.sectionTitle {
+    font-size: 0.875rem;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 0.5rem;
+}
+
+.baseColors {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.colorSwatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.colorCircle {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    border: 1px solid #000;
+}
+
+.colorLabel {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.paletteGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.paletteSwatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 0.625rem;
+}
+
+.paletteColor {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #000;
+}
+
+.paletteName {
+    font-size: 0.625rem;
+}
+
+.paletteHex {
+    font-size: 0.5625rem;
+}
+
+.outfitList {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-top: 1.5rem;
+}
+
+.outfitItem {
+    margin-bottom: 0.25rem;
+}
+
+/* Layout */
+.container {
     background-color: #FCF2DF;
     height: 822px;
     width: 375px;
@@ -138,14 +227,6 @@
   }
 
   
-  .sectionTitle {
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-  
   .infoIcon {
     position: absolute;;
     margin-right: 8px;
@@ -157,13 +238,6 @@
     display: flex;
     gap: 40px;
     align-items: center;
-  }
-  
-  .colorCircle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin: 0 auto;
   }
   
   .colorLabel {

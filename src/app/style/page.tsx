@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TransitionWrapper from '@/components/TransitionWrapper';
 import Cookies from 'js-cookie';
+import Navigation from '@/components/Navigation';
 
 const styleOptions = [
   'Daily',
@@ -27,19 +28,8 @@ export default function StylePage() {
     <TransitionWrapper>
       <div className="mobile-display">
         <div className={styles.container}>
-          {/* Login Button */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              zIndex: 10,
-            }}
-          >
-            <Link href="/login">
-              <button className="login">LOGIN</button>
-            </Link>
-          </div>
+          {/* Navigation */}
+          <Navigation />
 
           {/* Top Bar */}
           <div className={styles.topBar}>

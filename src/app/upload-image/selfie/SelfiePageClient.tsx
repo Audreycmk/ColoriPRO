@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './SelfiePage.module.css';
 import Link from 'next/link';
+import Navigation from '@/components/Navigation';
 
 export default function SelfiePageClient() {
   const router = useRouter();
@@ -33,7 +34,11 @@ export default function SelfiePageClient() {
   const handleContinue = async () => {
     if (!imageFile) return;
   
-    const redirectParams = new URLSearchParams({ age, style: stylesParam }).toString();
+    const redirectParams = new URLSearchParams({ 
+      age, 
+      style: stylesParam,
+      returnTo: '/report'
+    }).toString();
     router.push(`/loading?${redirectParams}`);
   
     try {
@@ -41,7 +46,6 @@ export default function SelfiePageClient() {
       formData.append('file', imageFile);
   
       console.log('📤 Uploading image...');
-  
       const uploadRes = await fetch('/api/upload-image', {
         method: 'POST',
         body: formData,
@@ -64,7 +68,13 @@ export default function SelfiePageClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ age, style: stylesParam.split(','), imageUrl }),
       });
-  
+      
+      if (!promptRes.ok) {
+        const errorText = await promptRes.text();
+        console.error('❌ GPT API Error Response:', errorText);
+        throw new Error(`GPT API failed with status ${promptRes.status}`);
+      }
+      
       const { result } = await promptRes.json();
       console.log('🧠 GPT Result:', result);
   
@@ -86,17 +96,29 @@ export default function SelfiePageClient() {
         body: JSON.stringify({ imagePrompt }),
       });
   
-      const { imageUrl: outfitImage } = await imageGenRes.json();
-      if (!outfitImage) throw new Error('Image generation failed');
+      const { imageBase64 } = await imageGenRes.json();
+      const outfitImage = `data:image/png;base64,${imageBase64}`;
   
       console.log('🖼️ Generated outfit image:', outfitImage);
   
+      // ✅ Save to localStorage before navigating
       localStorage.setItem('reportResult', result);
       localStorage.setItem('outfitImage', outfitImage);
+  
+      // 🪵 Debug: confirm saved data
+      const checkReport = localStorage.getItem('reportResult');
+      const checkImage = localStorage.getItem('outfitImage');
+      console.log('✅ Confirm reportResult in localStorage:', checkReport?.slice(0, 100) + '...');
+      console.log('✅ Confirm outfitImage saved:', checkImage?.slice(0, 30) + '...');
+  
+      // ✅ Now safe to route to /report
+      router.push('/report');
     } catch (err) {
       console.error('❌ Error in handleContinue:', err);
     }
   };
+  
+  
   
 
   return (
@@ -106,19 +128,8 @@ export default function SelfiePageClient() {
           imageSrc ? styles.confirmBackground : styles.uploadBackground
         }`}
       >
-        {/* Login Button */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            zIndex: 10,
-          }}
-        >
-          <Link href="/login">
-            <button className="login">LOGIN</button>
-          </Link>
-        </div>
+        {/* Navigation */}
+        <Navigation />
 
         {/* Back Button */}
         <div className={styles.topBar}>

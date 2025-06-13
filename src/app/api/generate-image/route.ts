@@ -23,29 +23,24 @@ export async function POST(req: Request) {
       prompt: imagePrompt,
       n: 1,
       size: '1024x1792',
-      response_format: 'url',
+      response_format: 'b64_json',
     });
 
-    // Log entire OpenAI response for debugging
     console.log('🧠 Full OpenAI response:', JSON.stringify(imageResponse, null, 2));
 
-    const imageUrl = imageResponse?.data?.[0]?.url;
+    const imageBase64 = imageResponse?.data?.[0]?.b64_json;
 
-    if (!imageUrl || typeof imageUrl !== 'string' || !imageUrl.startsWith('http')) {
-      console.error('❌ Invalid or missing image URL:', imageUrl);
+    if (!imageBase64 || typeof imageBase64 !== 'string') {
       return NextResponse.json(
-        { error: 'Failed to generate a valid image URL from OpenAI' },
+        { error: 'Failed to generate a valid image' },
         { status: 500 }
       );
     }
 
-    console.log('✅ Successfully generated image URL:', imageUrl);
-
-    return NextResponse.json({ imageUrl });
+    return NextResponse.json({ imageBase64 });
   } catch (error: any) {
     console.error('❌ Image generation error:', error?.message || error);
 
-    // Optional: print full error stack if available
     if (error?.response?.data) {
       console.error('📦 OpenAI error response:', JSON.stringify(error.response.data, null, 2));
     }
