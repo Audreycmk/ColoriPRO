@@ -5,6 +5,33 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
+npm install
+npm install -D tailwindcss postcss autoprefixer
+# HTML-to-PDF
+npm install html2canvas jspdf
+
+# Image upload + storage
+npm install cloudinary
+
+# Clerk auth
+npm install @clerk/nextjs
+
+# OpenAI SDK
+npm install openai
+
+# Markdown parser (if used for GPT result parsing)
+npm install marked
+
+# Utility libraries (optional)
+npm install axios cookie js-cookie
+
+# If using TypeScript
+npm install --save-dev typescript @types/react @types/node
+
+# If deploying later (e.g. Vercel)
+npm install vercel
+
+
 npm run dev
 # or
 yarn dev

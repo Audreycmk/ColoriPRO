@@ -32,7 +32,7 @@ export default function SelfiePageClient() {
   };
 
   const handleContinue = async () => {
-    if (!imageFile) return;
+    if (!imageSrc) return;
   
     const redirectParams = new URLSearchParams({ 
       age, 
@@ -42,41 +42,21 @@ export default function SelfiePageClient() {
     router.push(`/loading?${redirectParams}`);
   
     try {
-      const formData = new FormData();
-      formData.append('file', imageFile);
-  
-      console.log('📤 Uploading image...');
-      const uploadRes = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!uploadRes.ok) {
-        const text = await uploadRes.text();
-        console.error('❌ Upload error:', text);
-        return;
-      }
-  
-      const { imageUrl } = await uploadRes.json();
-      if (!imageUrl) throw new Error('Upload failed to return imageUrl');
-  
-      console.log('✅ Uploaded image URL:', imageUrl);
-  
       console.log('🧠 Sending image to /api/generate-prompt...');
       const promptRes = await fetch('/api/generate-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ age, style: stylesParam.split(','), imageUrl }),
+        body: JSON.stringify({ imageBase64: imageSrc }),
       });
       
       if (!promptRes.ok) {
         const errorText = await promptRes.text();
-        console.error('❌ GPT API Error Response:', errorText);
-        throw new Error(`GPT API failed with status ${promptRes.status}`);
+        console.error('❌ Gemini API Error Response:', errorText);
+        throw new Error(`Gemini API failed with status ${promptRes.status}`);
       }
       
       const { result } = await promptRes.json();
-      console.log('🧠 GPT Result:', result);
+      console.log('🧠 Gemini Result:', result);
   
       if (!result) throw new Error('No prompt result returned');
   
@@ -84,7 +64,7 @@ export default function SelfiePageClient() {
       const imagePrompt = match?.[1]?.trim();
   
       if (!imagePrompt || imagePrompt.length < 10) {
-        console.error('❌ No valid image prompt found. GPT result was:', result);
+        console.error('❌ No valid image prompt found. Gemini result was:', result);
         return;
       }
   
