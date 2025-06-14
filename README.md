@@ -5,7 +5,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
+.env.local 
+
 npm install
+npm install @google/generative-ai
+
+npm install --save-dev @types/node
 npm install -D tailwindcss postcss autoprefixer
 # HTML-to-PDF
 npm install html2canvas jspdf

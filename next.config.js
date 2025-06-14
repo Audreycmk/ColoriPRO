@@ -1,13 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'oaidalleapiprodscus.blob.core.windows.net',
-      'res.cloudinary.com',
-      'img.clerk.com',
-      'www.gravatar.com'
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+      },
+      {
+        protocol: 'https' ,
+        hostname: 'www.gravatar.com',
+      }
     ],
   },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

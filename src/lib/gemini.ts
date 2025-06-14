@@ -1,3 +1,4 @@
+// src/lib/gemini.ts
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // IMPORTANT: Make sure NEXT_PUBLIC_GEMINI_API_KEY is set in your .env.local file.
@@ -72,8 +73,8 @@ Based on these features, analyze and provide the following:
    — name only (no images or descriptions)
 
 8. **Image Prompt**  
-   Flatlay of style outfit — top, bottom, shoes, glasses, and bag — using seasonal color palette.  
-   No people, no background. Full layout visible and color-coordinated.
+   Flatlay of style outfit for current season — Include exactly **5 items**: 1 top, 1 bottom, 1 pair of shoes, 1 pair of glasses, 1 bag — using 3**only 3 HEX colors** from the palette above.  
+   No people, transparent background, with no shadows. **Do not include** makeup, hats, phones, or extra accessories. Full layout visible and color-coordinated. Response must be a **single descriptive sentence or paragraph**, suitable for input to an image generation model (like DALL·E 3)
 `
     ]);
 
@@ -82,19 +83,11 @@ Based on these features, analyze and provide the following:
     console.log("lib/gemini.ts: Gemini response received. Text length:", textResult.length);
     return textResult;
 
-  } catch (error) {
-    console.error('lib/gemini.ts ERROR: Error analyzing face with Gemini:', error);
-    if (error.response) {
-        const errorBody = await error.response.text();
-        console.error('Gemini API Error Details:', errorBody);
-        // Attempt to parse JSON error from API if available
-        try {
-            const errorJson = JSON.parse(errorBody);
-            return `Error from Gemini API: ${errorJson.error.message || JSON.stringify(errorJson)}.`;
-        } catch (e) {
-            return `Error from Gemini API: ${errorBody}.`;
-        }
+  } catch (error: unknown) {
+    console.error('Error analyzing image:', error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to analyze image: ${error.message}`);
     }
-    return `An unexpected error occurred during analysis: ${error instanceof Error ? error.message : String(error)}.`;
+    throw new Error('Failed to analyze image: Unknown error occurred');
   }
 } 
