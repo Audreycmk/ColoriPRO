@@ -73,7 +73,7 @@ Based on these features, analyze and provide the following:
    — name only (no images or descriptions)
 
 8. **Image Prompt**  
-   Flatlay of style outfit for current season — Include exactly **5 items**: 1 top, 1 bottom, 1 pair of shoes, 1 pair of glasses, 1 bag — using 3**only 3 HEX colors** from the palette above.  
+   Flatlay of style outfit for current season — Include exactly **7 items**: 1 top, 1 bottom, 1 pair of shoes, 1 pair of glasses, 1 bag, 1 earing, 1 ring — using **only 3 HEX colors** from the palette above, and JEWELRY TONE for 1 earing, 1 ring.  
    No people, transparent background, with no shadows. **Do not include** makeup, hats, phones, or extra accessories. Full layout visible and color-coordinated. Response must be a **single descriptive sentence or paragraph**, suitable for input to an image generation model (like DALL·E 3)
 `
     ]);

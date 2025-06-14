@@ -69,26 +69,26 @@ interface AnalysisData {
 export default function ReportPage() {
   const { user } = useUser();
   const reportRef = useRef<HTMLDivElement>(null);
-const [showPopup, setShowPopup] = useState<string | null>(null);
-const popupRef = useRef<HTMLDivElement>(null);
+  const [showPopup, setShowPopup] = useState<string | null>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [styleOption, setStyleOption] = useState<string>('');
-  const [outfitImageUrl, setOutfitImageUrl] = useState<string | null>(null); // State for the generated outfit image URL
-  const [imageError, setImageError] = useState(false); // State for image loading error
-  const [selectedStyle, setSelectedStyle] = useState<string>('Sporty');
+  const [outfitImageUrl, setOutfitImageUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
+  const [isGeneratingOutfit, setIsGeneratingOutfit] = useState(false);
 
   useEffect(() => {
     // Get style option from cookies
     const savedStyle = Cookies.get('styleOption');
     if (savedStyle) {
-      setStyleOption(savedStyle.toUpperCase());
+      setStyleOption(savedStyle);
     }
 
     // Get the latest report result from localStorage
     const reportResult = localStorage.getItem('reportResult');
     if (reportResult) {
       try {
-        console.log('Raw Gemini Result:', reportResult); // Debug log
+        console.log('Raw Gemini Result:', reportResult);
 
         const parseGeminiResponse = (responseText: string): AnalysisData => {
           const lines = responseText.split('\n');
@@ -249,9 +249,8 @@ const popupRef = useRef<HTMLDivElement>(null);
         };
 
         const parsedData = parseGeminiResponse(reportResult);
-        console.log('Parsed Analysis Data:', parsedData); // Debug log
+        console.log('Parsed Analysis Data:', parsedData);
 
-        // Update the state with new data
         setAnalysisData(parsedData);
       } catch (error) {
         console.error('Error parsing Gemini result:', error);
@@ -260,28 +259,35 @@ const popupRef = useRef<HTMLDivElement>(null);
       console.warn('No report result found in localStorage');
     }
 
-    // --- Image URL Handling ---
     // Initialize image state
-    setOutfitImageUrl(null); // Clear previous image
-    setImageError(false); // Reset error state
+    setOutfitImageUrl(null);
+    setImageError(false);
+    setIsGeneratingOutfit(true);
 
     const checkForOutfitImage = () => {
       const storedImageUrl = localStorage.getItem('generatedImageUrl');
-      if (storedImageUrl && storedImageUrl !== outfitImageUrl) {
-        console.log('New outfit image URL detected:', storedImageUrl); // Debug log
+      if (storedImageUrl) {
+        console.log('🖼️ Generated outfit image URL from Cloudinary:', storedImageUrl);
         setOutfitImageUrl(storedImageUrl);
+        setIsGeneratingOutfit(false);
+        localStorage.removeItem('generatedImageUrl');
+        return true;
       }
+      return false;
     };
 
     // Check immediately
-    checkForOutfitImage();
+    if (!checkForOutfitImage()) {
+      // Set up interval only if image not found immediately
+      const intervalId = setInterval(() => {
+        if (checkForOutfitImage()) {
+          clearInterval(intervalId);
+        }
+      }, 1000);
 
-    // Set up interval to check for image (in case it loads after initial render)
-    const intervalId = setInterval(checkForOutfitImage, 1000); // Check every second
-
-    // Clear interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []); // Empty dependency array means this runs once on mount
+      return () => clearInterval(intervalId);
+    }
+  }, []);
 
 
   // Function to handle showing/hiding popups
@@ -366,7 +372,7 @@ const popupRef = useRef<HTMLDivElement>(null);
       {/* Header */}
       <div className="bg-[#FEDCB6] h-[202px] flex flex-col items-center justify-start px-4 pt-6 sticky top-0 z-10">
         <div className="w-full flex justify-between items-center">
-          <Link href="/upload-image">
+          <Link href="/upload-image/selfie">
             <div className={styles.back}>&lt;</div>
           </Link>
           <Navigation />
@@ -540,9 +546,9 @@ const popupRef = useRef<HTMLDivElement>(null);
         
         {/* Outfit */}
         <div className="mt-[50px] mb-8 text-center">
-        <p className={styles.reportTitle}>STYLE: {selectedStyle.toUpperCase()}</p>
+        <p className={styles.reportTitle}>STYLE: {styleOption.toUpperCase()}</p>
               <div className="relative flex flex-col items-center justify-center min-h-[350px]">
-                {!outfitImageUrl ? (
+                {isGeneratingOutfit || !outfitImageUrl ? (
                   <div className="flex flex-col items-center justify-center h-[350px] w-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
                     <p className="text-gray-600">Generating your outfit...</p>
@@ -563,8 +569,12 @@ const popupRef = useRef<HTMLDivElement>(null);
                         className="rounded-lg mb-[50px] object-contain"
                         onError={() => {
                           setImageError(true);
+                          setIsGeneratingOutfit(false);
                         }}
-                        priority // Prioritize loading of this image
+                        onLoad={() => {
+                          setIsGeneratingOutfit(false);
+                        }}
+                        priority
         />
         </div>
                     <span className="text-sm text-blue-600 hover:underline">Click to view full size</span>
